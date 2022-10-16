@@ -1,0 +1,23 @@
+#!/bin/bash
+
+. common.sh
+read_env ".env" > /dev/null
+
+etc_hosts_entries="${MASTER0_IP} ${MASTER0_NAME}"
+for idx in "${!WORKERS_NAMES[@]}"; do
+    worker_name="${WORKERS_NAMES[idx]}"
+    worker_ip="${WORKERS_IPS[idx]}"
+    etc_hosts_entries="${etc_hosts_entries}\n${worker_ip} ${worker_name}"
+done
+
+cat << EOF
+set -u
+
+if grep -q "${MASTER0_IP}" /etc/hosts; then
+  echo "/etc/hosts already contains ${MASTER0_IP}, skip..."
+  exit 0
+fi
+
+etc_hosts_entries="${etc_hosts_entries}"
+echo -e "\${etc_hosts_entries}" | sudo tee -a /etc/hosts
+EOF

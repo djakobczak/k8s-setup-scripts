@@ -1,0 +1,2 @@
+# set user URI to sudo URI
+export LIBVIRT_DEFAULT_URI="qemu:///system"
